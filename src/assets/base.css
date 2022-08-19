@@ -1,0 +1,21 @@
+/* color palette from <https://github.com/vuejs/theme> */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@font-face {
+    font-family: 'Material';
+    src: local('Material'),
+      url(./assets/fonts/materialdesignicons-webfont.ttf) format('truetype');
+}
+:root {
+  font-family: 'Roboto', sans-serif;
+
+  --white-bg: #ffffff;
+  --darkblue-bg: #214171;
+  --darkerblue-bg: rgba(0, 0, 0, 0.21);
+
+  --white-color: white;
+} 
+
+* {
+  margin: 0;
+  padding: 0;
+}

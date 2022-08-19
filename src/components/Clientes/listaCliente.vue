@@ -1,0 +1,141 @@
+<template>
+  <div class="card">
+    <div class="titulo">
+      <p>Listagem de Clientes</p>
+    </div>
+    <div class="fullList">
+      <div class="header">
+        <router-link :to="`/clientes/novo`">Novo Cliente</router-link>
+        <input type="search" v-model="search" placeholder="Procurar" />
+      </div>
+      <div class="list">
+        <div class="list-header">
+          <p>Nome</p>
+          <p>Email</p>
+          <p>Data de Nascimento</p>
+          <p>CPF</p>
+          <p>Endereço</p>
+          <p>Telefone 1</p>
+          <p>Telefone 2</p>
+        </div>
+        <div class="list-contents">
+          <div v-for="item in current_data" :key="item.id" class="list-content">
+            <router-link :to="`/clientes/${item.id}`" class="item-list">
+              <p>{{ item.attributes.name }}</p>
+              <p>{{ item.attributes.email }}</p>
+              <p>{{ item.attributes.birthdate }}</p>
+              <p>{{ item.attributes.cpf }}</p>
+              <p>{{ item.attributes.address }}</p>
+              <p>{{ item.attributes.phone1 }}</p>
+              <p v-if="item.attributes.phone2">{{ item.attributes.phone2 }}</p>
+            </router-link>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import api from '../../services/axios.js';
+import headers from '../../services/headers.js';
+
+export default defineComponent({
+  name: 'listaCliente',
+  data() {
+    return { myList: [], search: '' };
+  },
+  beforeMount() {
+    api.get('/customers/all', headers).then((response) => {
+      this.myList = response.data.data;
+    });
+  },
+  computed: {
+    current_data() {
+      return (
+        this.myList.filter((element) =>
+          element.attributes.name
+            .toLowerCase()
+            .includes(this.search.toLowerCase())
+        ) || []
+      );
+    },
+  },
+});
+</script>
+
+<style scoped>
+.card {
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.15);
+  margin-right: 10%;
+  margin-top: 15px;
+  border-radius: 8px;
+  padding: 32px 11px 32px 32px;
+}
+
+.titulo p {
+  margin-bottom: 30px;
+  font-size: 24px;
+}
+.fullList {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.header a {
+  text-decoration: none;
+  color: black;
+  background-color: var(--darkblue-bg);
+  color: white;
+  padding: 8px 32px 8px 32px;
+  border-radius: 8px;
+}
+
+.header input {
+  height: 30px;
+  width: 380px;
+}
+
+.list-header {
+  background-color: #d9d9d9;
+  padding: 6px 12px 7px 19px;
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1fr 1fr 3fr 1fr 1fr;
+}
+.list-contents {
+  max-height: 550px;
+  overflow-y: auto;
+}
+.list-content {
+  padding: 12px 15px;
+  border-top: 1px solid #d9d9d9;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.list-content > a {
+  text-decoration: none;
+  color: black;
+}
+
+.list-content:last-child {
+  border-bottom: none;
+}
+
+.list-content:hover {
+  background-color: #d9d9d9;
+}
+
+.item-list {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1fr 1fr 3fr 1fr 1fr;
+}
+</style>
