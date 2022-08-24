@@ -23,8 +23,8 @@
             <router-link :to="`/produtos/${item.id}`" class="item-list">
               <img v-bind:src="item.attributes.image" class="item-image" />
               <p>{{ item.attributes.name }}</p>
-              <p>{{ item.attributes['category-name'].name }}</p>
-              <p>{{ item.attributes['unit-name'].name }}</p>
+              <p>{{ item.attributes['category-name']?.name }}</p>
+              <p>{{ item.attributes['unit-name']?.name }}</p>
               <p>{{ item.attributes['quantity-in-stock'] }}</p>
               <p>R${{ item.attributes.price }}</p>
               <p>{{ highligth(item) }}</p>
@@ -40,11 +40,12 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
 
 export default defineComponent({
   name: 'listaProdutos',
   data() {
-    return { myList: [], search: '' };
+    return { myList: [] as unknown as JSON[], search: '' };
   },
   beforeMount() {
     api.get('/products/all', headers).then((response) => {
@@ -52,7 +53,7 @@ export default defineComponent({
     });
   },
   methods: {
-    highligth(item) {
+    highligth(item: JSON) {
       if (item.attributes.highlight === true) {
         return 'Sim';
       } else {

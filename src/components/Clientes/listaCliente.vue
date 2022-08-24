@@ -40,11 +40,12 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
 
 export default defineComponent({
   name: 'listaCliente',
   data() {
-    return { myList: [], search: '' };
+    return { myList: [] as unknown as JSON[], search: '' };
   },
   beforeMount() {
     api.get('/customers/all', headers).then((response) => {

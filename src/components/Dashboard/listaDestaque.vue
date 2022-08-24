@@ -16,8 +16,8 @@
         <div v-for="item in current_data" :key="item.id" class="item-list">
           <img v-bind:src="item.attributes.image" class="item-image" />
           <p>{{ item.attributes.name }}</p>
-          <p>{{ item.attributes['category-name'].name }}</p>
-          <p>{{ item.attributes['unit-name'].name }}</p>
+          <p>{{ item.attributes['category-name']?.name }}</p>
+          <p>{{ item.attributes['unit-name']?.name }}</p>
           <p>{{ item.attributes['quantity-in-stock'] }}</p>
           <p>R${{ item.attributes.price }}</p>
         </div>
@@ -30,11 +30,16 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
 
 export default defineComponent({
   name: 'listaDestaque',
   data() {
-    return { myList: [], search: '', highlightList: [] };
+    return {
+      myList: [] as unknown as JSON[],
+      search: '',
+      highlightList: [] as unknown as JSON[],
+    };
   },
   beforeMount() {
     api.get('/products/all', headers).then((response) => {

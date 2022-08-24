@@ -7,27 +7,27 @@
     <form action="" class="form">
       <div class="campo">
         <label for="name">Nome do Cliente</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
       <div class="campo">
         <label for="email">Email</label>
-        <input type="email" v-model="email" />
+        <input type="email" v-model="email" required />
       </div>
       <div class="campo">
         <label for="date">Data de Nascimento</label>
-        <input type="date" v-model="birthdate" />
+        <input type="date" v-model="birthdate" required />
       </div>
       <div class="campo">
         <label for="cpf">CPF</label>
-        <input type="text" v-model="cpf" />
+        <input type="text" v-model="cpf" required />
       </div>
       <div class="campo">
         <label for="address">Endereco</label>
-        <input type="text" v-model="address" />
+        <input type="text" v-model="address" required />
       </div>
       <div class="campo">
         <label for="phone1">Telefone 1</label>
-        <input type="text" v-model="phone1" />
+        <input type="text" v-model="phone1" required />
       </div>
       <div class="campo">
         <label for="phone2">Telefone 2</label>
@@ -36,14 +36,14 @@
       <button
         type="submit"
         class="edit-button"
-        @click.prevent="editCliente(id)"
+        @click.prevent="editCliente(id as unknown as number)"
       >
         Editar
       </button>
       <button
         type="submit"
         class="delete-button"
-        @click.prevent="deleteCliente(id)"
+        @click.prevent="deleteCliente(id as unknown as number)"
       >
         Excluir
       </button>
@@ -51,7 +51,7 @@
         v-if="status !== '201' && status !== '' && status !== '204'"
         class="error"
       >
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>
@@ -61,6 +61,8 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
+import type ErrorHandler from '../../interfaces/Error';
 
 export default defineComponent({
   name: 'createUnits',
@@ -71,10 +73,10 @@ export default defineComponent({
   },
   data() {
     return {
-      myList: '',
+      myList: '' as unknown as JSON,
       name: '',
       email: '',
-      birthdate: '',
+      birthdate: '' as unknown as Date,
       cpf: '',
       address: '',
       phone1: '',
@@ -88,16 +90,16 @@ export default defineComponent({
     api.get(`/customers/${this.aaa}`, headers).then((res) => {
       this.myList = res.data.data;
       this.name = this.myList.attributes.name;
-      this.email = this.myList.attributes.email;
-      this.birthdate = this.myList.attributes.birthdate;
-      this.cpf = this.myList.attributes.cpf;
-      this.address = this.myList.attributes.address;
-      this.phone1 = this.myList.attributes.phone1;
-      this.phone2 = this.myList.attributes.phone2;
+      this.email = this.myList.attributes.email || '';
+      this.birthdate = this.myList.attributes.birthdate || new Date();
+      this.cpf = this.myList.attributes.cpf || '';
+      this.address = this.myList.attributes.address || '';
+      this.phone1 = this.myList.attributes.phone1 || '';
+      this.phone2 = this.myList.attributes.phone2 || '';
     });
   },
   methods: {
-    editCliente(id) {
+    editCliente(id: number) {
       const body = {
         id: `${id}`,
         name: `${this.name}`,
@@ -117,14 +119,14 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },
 
-    deleteCliente(id) {
+    deleteCliente(id: number) {
       api
         .delete(`/customers/${id}`, headers)
         .then((res) => {
@@ -135,9 +137,9 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },

@@ -26,11 +26,12 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
 
 export default defineComponent({
   name: 'listaUnits',
   data() {
-    return { myList: [], search: '' };
+    return { myList: [] as unknown as JSON[], search: '' };
   },
   beforeMount() {
     api.get('/units', headers).then((response) => {
@@ -40,7 +41,7 @@ export default defineComponent({
   computed: {
     current_data() {
       return (
-        this.myList.filter((element) =>
+        this.myList.filter((element: JSON) =>
           element.attributes.name
             .toLowerCase()
             .includes(this.search.toLowerCase())

@@ -7,7 +7,7 @@
     <form action="" class="form">
       <div class="campo">
         <label for="name">Nome do Cliente</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
       <div class="campo">
         <label for="email">Email</label>
@@ -15,19 +15,19 @@
       </div>
       <div class="campo">
         <label for="birthdate">Data de Nascimento</label>
-        <input type="data" v-model="birthdate" />
+        <input type="data" v-model="birthdate" required />
       </div>
       <div class="campo">
         <label for="cpf">CPF do Cliente</label>
-        <input type="text" v-model="cpf" />
+        <input type="text" v-model="cpf" required />
       </div>
       <div class="campo">
         <label for="address">Endereço do Cliente</label>
-        <input type="text" v-model="address" />
+        <input type="text" v-model="address" required />
       </div>
       <div class="campo">
         <label for="phone1">Telefone 1</label>
-        <input type="text" v-model="phone1" />
+        <input type="text" v-model="phone1" required />
       </div>
       <div class="campo">
         <label for="phone2">Telefone 2</label>
@@ -41,7 +41,7 @@
         Salvar
       </button>
       <div v-if="status !== '201' && status !== ''" class="error">
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>
@@ -51,6 +51,7 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type ErrorHandler from '../../interfaces/Error';
 
 export default defineComponent({
   name: 'createCliente',
@@ -88,9 +89,9 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },

@@ -7,7 +7,7 @@
     <form action="">
       <div class="campo">
         <label for="name">Nome da Categoria</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
       <button
         type="submit"
@@ -17,7 +17,7 @@
         Salvar
       </button>
       <div v-if="status !== '201' && status !== ''" class="error">
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>

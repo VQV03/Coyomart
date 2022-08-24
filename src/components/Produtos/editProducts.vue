@@ -7,51 +7,51 @@
     <form action="" class="form">
       <div class="campo">
         <label for="name">Nome do Produtos</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
       <div class="campo">
         <label for="description">Descrição do Produto</label>
-        <input type="text" v-model="description" class="description" />
+        <input type="text" v-model="description" class="description" required />
       </div>
       <div class="campo">
         <label for="categoryID">Categoria</label>
-        <select name="category" class="dropdown" v-model="categoryID">
+        <select name="category" class="dropdown" v-model="categoryID" required>
           <option disabled value="" selected="true">Categorias</option>
           <option
             v-for="category in categoryList"
-            :key="category.id"
-            v-bind:value="category.id"
-            :selected="category.id == this.categoryID"
+            :key="category?.id"
+            v-bind:value="category?.id"
+            :selected="category?.id == categoryID"
           >
-            {{ category.attributes.name }}
+            {{ category?.attributes.name }}
           </option>
         </select>
       </div>
       <div class="campo">
         <label for="unitID">Unidade de Medida</label>
-        <select name="unit" class="dropdown" v-model="unitID">
+        <select name="unit" class="dropdown" v-model="unitID" required>
           <option disabled value="" selected="true">Unidades de Medida</option>
           <option
             v-for="unit in unitList"
-            :key="unit.id"
-            v-bind:value="unit.id"
-            :selected="unit.id == this.unitID"
+            :key="unit?.id"
+            v-bind:value="unit?.id"
+            :selected="unit?.id == unitID"
           >
-            {{ unit.attributes.name }}
+            {{ unit?.attributes.name }}
           </option>
         </select>
       </div>
       <div class="campo">
         <label for="quantityInStock">Quantidade em Estoque</label>
-        <input type="number" v-model="quantityInStock" />
+        <input type="number" v-model="quantityInStock" required />
       </div>
       <div class="campo">
         <label for="price">Preço</label>
-        <input type="number" v-model="price" />
+        <input type="number" v-model="price" required />
       </div>
       <div class="campo">
         <label for="image">Imagem do Produto</label>
-        <input type="url" v-model="image" />
+        <input type="url" v-model="image" required />
       </div>
       <div class="campo-check">
         <input type="checkbox" v-model="highlight" />
@@ -59,14 +59,14 @@
       </div>
       <button
         type="submit"
-        @click.prevent="editProduct(id)"
+        @click.prevent="editProduct(id as string)"
         class="edit-button"
       >
         Editar
       </button>
       <button
         type="submit"
-        @click.prevent="deleteProduct(id)"
+        @click.prevent="deleteProduct(id as string)"
         class="delete-button"
       >
         Excluir
@@ -75,7 +75,7 @@
         v-if="status !== '201' && status !== '' && status !== '204'"
         class="error"
       >
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>
@@ -85,6 +85,8 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
+import type ErrorHandler from '@/interfaces/Error';
 
 export default defineComponent({
   name: 'createUnits',
@@ -95,20 +97,20 @@ export default defineComponent({
   },
   data() {
     return {
-      myList: '',
+      myList: {} as JSON,
       name: '',
       description: '',
-      quantityInStock: '',
-      price: '',
-      highlight: '',
+      quantityInStock: 0,
+      price: 0,
+      highlight: false,
       image: '',
-      categoryID: '',
-      unitID: '',
+      categoryID: 0,
+      unitID: 0,
       status: '',
       error: '',
       aaa: this.id,
-      unitList: '',
-      categoryList: '',
+      unitList: '' as unknown as JSON,
+      categoryList: '' as unknown as JSON,
     };
   },
   beforeMount() {
@@ -120,18 +122,19 @@ export default defineComponent({
     });
     api.get(`/products/${this.aaa}`, headers).then((res) => {
       this.myList = res.data.data;
+      console.log(this.myList);
       this.name = this.myList.attributes.name;
-      this.description = this.myList.attributes.description;
-      this.quantityInStock = this.myList.attributes['quantity-in-stock'];
-      this.highlight = this.myList.attributes.highlight;
-      this.categoryID = this.myList.attributes['category-name'].id;
-      this.unitID = this.myList.attributes['unit-name'].id;
-      this.image = this.myList.attributes.image;
-      this.price = this.myList.attributes.price;
+      this.description = this.myList.attributes.description || '';
+      this.quantityInStock = this.myList.attributes['quantity-in-stock'] || 0;
+      this.highlight = this.myList.attributes.highlight || false;
+      this.categoryID = this.myList.attributes['category-name']?.id || 0;
+      this.unitID = this.myList.attributes['unit-name']?.id || 0;
+      this.image = this.myList.attributes.image || '';
+      this.price = this.myList.attributes.price || 0;
     });
   },
   methods: {
-    editProduct(id) {
+    editProduct(id: string) {
       const body = {
         id: `${id}`,
         name: `${this.name}`,
@@ -152,27 +155,26 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },
 
-    deleteProduct(id) {
+    deleteProduct(id: string) {
       api
         .delete(`/products/${id}`, headers)
         .then((res) => {
-          console.log(id);
           if (res.status == 204) {
             this.status = '204';
             this.$router.push('/produtos');
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },

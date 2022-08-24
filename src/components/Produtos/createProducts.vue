@@ -7,49 +7,49 @@
     <form action="" class="form">
       <div class="campo">
         <label for="name">Nome do Produtos</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
       <div class="campo">
         <label for="description">Descrição do Produto</label>
-        <input type="text" v-model="description" class="description" />
+        <input type="text" v-model="description" class="description" required />
       </div>
       <div class="campo">
         <label for="categoryID">Categoria</label>
-        <select name="category" class="dropdown" v-model="categoryID">
+        <select name="category" class="dropdown" v-model="categoryID" required>
           <option disabled value="" selected="true">Categorias</option>
           <option
             v-for="category in categoryList"
-            :key="category.id"
-            v-bind:value="category.id"
+            :key="category?.id"
+            v-bind:value="category?.id"
           >
-            {{ category.attributes.name }}
+            {{ category?.attributes.name }}
           </option>
         </select>
       </div>
       <div class="campo">
         <label for="unitID">Unidade de Medida</label>
-        <select name="unit" class="dropdown" v-model="unitID">
+        <select name="unit" class="dropdown" v-model="unitID" required>
           <option disabled value="" selected="true">Unidades de Medida</option>
           <option
             v-for="unit in unitList"
-            :key="unit.id"
-            v-bind:value="unit.id"
+            :key="unit?.id"
+            v-bind:value="unit?.id"
           >
-            {{ unit.attributes.name }}
+            {{ unit?.attributes.name }}
           </option>
         </select>
       </div>
       <div class="campo">
         <label for="quantityInStock">Quantidade em Estoque</label>
-        <input type="number" v-model="quantityInStock" />
+        <input type="number" v-model="quantityInStock" required />
       </div>
       <div class="campo">
         <label for="price">Preço</label>
-        <input type="number" v-model="price" />
+        <input type="number" v-model="price" required />
       </div>
       <div class="campo">
         <label for="image">Imagem do Produto</label>
-        <input type="url" v-model="image" />
+        <input type="url" v-model="image" required />
       </div>
       <div class="campo-check">
         <input type="checkbox" v-model="highlight" />
@@ -63,7 +63,7 @@
         Salvar
       </button>
       <div v-if="status !== '201' && status !== ''" class="error">
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>
@@ -73,6 +73,8 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
+import type ErrorHandler from '../../interfaces/Error';
 
 export default defineComponent({
   name: 'createUnits',
@@ -82,14 +84,14 @@ export default defineComponent({
       description: '',
       quantityInStock: '',
       price: '',
-      highlight: '',
+      highlight: '' as unknown as boolean,
       image: '',
       categoryID: '',
       unitID: '',
       status: '',
       error: '',
-      unitList: '',
-      categoryList: '',
+      unitList: '' as unknown as JSON,
+      categoryList: '' as unknown as JSON,
     };
   },
   beforeMount() {
@@ -121,12 +123,12 @@ export default defineComponent({
             this.$router.push('/produtos');
           }
         })
-        .catch((err) => {
-          console.log(categoryID);
-          console.log(unitID);
-          (this.error = err.response.status),
-            (this.status = err.response.status);
-        });
+        .catch(
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
+          )
+        );
     },
   },
 });

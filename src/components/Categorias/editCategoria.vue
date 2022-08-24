@@ -7,18 +7,18 @@
     <form action="" class="form">
       <div class="campo">
         <label for="name">Nome da Categoria</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
       <button
         type="submit"
-        @click.prevent="editCategory(id)"
+        @click.prevent="editCategory(id as unknown as number)"
         class="edit-button"
       >
         Editar
       </button>
       <button
         type="submit"
-        @click.prevent="deleteCategory(id)"
+        @click.prevent="deleteCategory(id as unknown as number)"
         class="delete-button"
       >
         Excluir
@@ -28,7 +28,7 @@
         v-if="status !== '201' && status !== '' && status !== '204'"
         class="error"
       >
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>
@@ -38,6 +38,8 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '@/interfaces/JSON';
+import type ErrorHandler from '../../interfaces/Error';
 
 export default defineComponent({
   name: 'createUnits',
@@ -48,7 +50,7 @@ export default defineComponent({
   },
   data() {
     return {
-      myList: '',
+      myList: '' as unknown as JSON,
       name: '',
       status: '',
       error: '',
@@ -62,7 +64,7 @@ export default defineComponent({
     });
   },
   methods: {
-    editCategory(id) {
+    editCategory(id: number) {
       const body = {
         id: `${id}`,
         name: `${this.name}`,
@@ -76,14 +78,14 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },
 
-    deleteCategory(id) {
+    deleteCategory(id: number) {
       api
         .delete(`/categories/${id}`, headers)
         .then((res) => {
@@ -93,9 +95,9 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },

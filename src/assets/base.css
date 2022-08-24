@@ -3,7 +3,7 @@
 @font-face {
     font-family: 'Material';
     src: local('Material'),
-      url(./assets/fonts/materialdesignicons-webfont.ttf) format('truetype');
+      url('./fonts/materialdesignicons-webfont.ttf') format('truetype');
 }
 :root {
   font-family: 'Roboto', sans-serif;

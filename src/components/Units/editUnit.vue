@@ -7,14 +7,18 @@
     <form action="" class="form">
       <div class="campo">
         <label for="name">Nome da Unidade de Medida</label>
-        <input type="text" v-model="name" />
+        <input type="text" v-model="name" required />
       </div>
-      <button type="submit" @click.prevent="editUnit(id)" class="edit-button">
+      <button
+        type="submit"
+        @click.prevent="editUnit(id as number)"
+        class="edit-button"
+      >
         Salvar
       </button>
       <button
         type="submit"
-        @click.prevent="deleteUnit(id)"
+        @click.prevent="deleteUnit(id as number)"
         class="delete-button"
       >
         Excluir
@@ -23,7 +27,7 @@
         v-if="status !== '201' && status !== '' && status !== '204'"
         class="error"
       >
-        <p>Ocorreu um erro {{ this.error }} inesperado, tente novamente.</p>
+        <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
     </form>
   </div>
@@ -33,17 +37,19 @@
 import { defineComponent } from 'vue';
 import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
+import type JSON from '../../interfaces/JSON';
+import type ErrorHandler from '../../interfaces/Error';
 
 export default defineComponent({
   name: 'createUnits',
   props: {
     id: {
-      type: String,
+      type: Number,
     },
   },
   data() {
     return {
-      myList: '',
+      myList: '' as unknown as JSON,
       name: '',
       status: '',
       error: '',
@@ -57,7 +63,7 @@ export default defineComponent({
     });
   },
   methods: {
-    editUnit(id) {
+    editUnit(id: number) {
       const body = {
         id: `${id}`,
         name: `${this.name}`,
@@ -71,14 +77,14 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },
 
-    deleteUnit(id) {
+    deleteUnit(id: number) {
       api
         .delete(`/units/${id}`, headers)
         .then((res) => {
@@ -88,9 +94,9 @@ export default defineComponent({
           }
         })
         .catch(
-          (err) => (
-            (this.error = err.response.status),
-            (this.status = err.response.status)
+          (err: ErrorHandler) => (
+            (this.error = err.response.status.toString()),
+            (this.status = err.response.status.toString())
           )
         );
     },
