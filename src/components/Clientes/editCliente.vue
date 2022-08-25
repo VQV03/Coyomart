@@ -19,7 +19,7 @@
       </div>
       <div class="campo">
         <label for="cpf">CPF</label>
-        <input type="text" v-model="cpf" required />
+        <input type="text" v-model="cpf" v-mask="'###.###.###-##'" required />
       </div>
       <div class="campo">
         <label for="address">Endereco</label>
@@ -27,11 +27,20 @@
       </div>
       <div class="campo">
         <label for="phone1">Telefone 1</label>
-        <input type="text" v-model="phone1" required />
+        <input
+          type="text"
+          v-model="phone1"
+          v-mask="['(##) ####-####', '(##) #####-####']"
+          required
+        />
       </div>
       <div class="campo">
         <label for="phone2">Telefone 2</label>
-        <input type="text" v-model="phone2" />
+        <input
+          type="text"
+          v-model="phone2"
+          v-mask="['(##) ####-####', '(##) #####-####']"
+        />
       </div>
       <button
         type="submit"
@@ -53,6 +62,9 @@
       >
         <p>Ocorreu um erro {{ error }} inesperado, tente novamente.</p>
       </div>
+      <div v-if="status === 'cpf-invalido'" class="error">
+        CPF inválido, insira um cpf válido para continuar.
+      </div>
     </form>
   </div>
 </template>
@@ -63,6 +75,7 @@ import api from '../../services/axios.js';
 import headers from '../../services/headers.js';
 import type JSON from '../../interfaces/JSON';
 import type ErrorHandler from '../../interfaces/Error';
+import { cpf } from 'cpf-cnpj-validator';
 
 export default defineComponent({
   name: 'createUnits',
@@ -110,20 +123,25 @@ export default defineComponent({
         phone2: `${this.phone2}`,
         email: `${this.email}`,
       };
-      api
-        .patch(`/customers/${id}`, body, headers)
-        .then((res) => {
-          if (res.status == 200) {
-            this.status = '200';
-            this.$router.push('/clientes');
-          }
-        })
-        .catch(
-          (err: ErrorHandler) => (
-            (this.error = err.response.status.toString()),
-            (this.status = err.response.status.toString())
-          )
-        );
+      const valido = cpf.isValid(this.cpf);
+      if (valido === true) {
+        api
+          .patch(`/customers/${id}`, body, headers)
+          .then((res) => {
+            if (res.status == 200) {
+              this.status = '200';
+              this.$router.push('/clientes');
+            }
+          })
+          .catch(
+            (err: ErrorHandler) => (
+              (this.error = err.response.status.toString()),
+              (this.status = err.response.status.toString())
+            )
+          );
+      } else {
+        this.status = 'cpf-invalido';
+      }
     },
 
     deleteCliente(id: number) {
